@@ -45,7 +45,7 @@ def metal_energy(metal_sym, charge=0):
 
 
 def dissociation_energy(
-    mol_string, metal_cation_energies, metal_atom_energies, full=True
+    mol_string, metal_cation_energies, full=True
 ):
     """
     Calculates the dissociation energy of a metal hydroxide molecule.
@@ -145,35 +145,35 @@ for metal_sym in metal_symbols:
     metal_atom_energies[metal_sym] = metal_energy(metal_sym)
 
 # Calculate dissociation energies
-diss_energy_LiOH = dissociation_energy(LIOH, metal_cation_energies, metal_atom_energies)
-diss_energy_NaOH = dissociation_energy(NAOH, metal_cation_energies, metal_atom_energies)
-diss_energy_KOH = dissociation_energy(KOH, metal_cation_energies, metal_atom_energies)
-diss_energy_BeOH2 = dissociation_energy(
-    BEOH2, metal_cation_energies, metal_atom_energies
-)
-diss_energy_MgOH2 = dissociation_energy(
-    MGOH2, metal_cation_energies, metal_atom_energies
-)
-diss_energy_CaOH2 = dissociation_energy(
-    CAOH2, metal_cation_energies, metal_atom_energies
-)
+diss_energy_LiOH = dissociation_energy(LIOH, metal_cation_energies)
+diss_energy_NaOH = dissociation_energy(NAOH, metal_cation_energies)
+diss_energy_KOH = dissociation_energy(KOH, metal_cation_energies)
+# diss_energy_BeOH2 = dissociation_energy(
+#     BEOH2, metal_cation_energies, metal_atom_energies
+# )
+# diss_energy_MgOH2 = dissociation_energy(
+#     MGOH2, metal_cation_energies, metal_atom_energies
+# )
+# diss_energy_CaOH2 = dissociation_energy(
+#     CAOH2, metal_cation_energies, metal_atom_energies
+# )
 
 print("Dissociation Energies (Hartree):")
 print(f"  LiOH: {diss_energy_LiOH:.6f}")
 print(f"  NaOH: {diss_energy_NaOH:.6f}")
 print(f"  KOH: {diss_energy_KOH:.6f}")
-print(f"  BeOH2: {diss_energy_BeOH2:.6f}, {diss_energy_BeOH2/2:.6f} per OH group")
-print(f"  MgOH2: {diss_energy_MgOH2:.6f}, {diss_energy_MgOH2/2:.6f} per OH group")
-print(f"  CaOH2: {diss_energy_CaOH2:.6f}, {diss_energy_CaOH2/2:.6f} per OH group")
+# print(f"  BeOH2: {diss_energy_BeOH2:.6f}, {diss_energy_BeOH2/2:.6f} per OH group")
+# print(f"  MgOH2: {diss_energy_MgOH2:.6f}, {diss_energy_MgOH2/2:.6f} per OH group")
+# print(f"  CaOH2: {diss_energy_CaOH2:.6f}, {diss_energy_CaOH2/2:.6f} per OH group")
 
 diss_energy_BeOH = dissociation_energy(
-    BEOH2, metal_cation_energies, metal_atom_energies, full=False
+    BEOH2, metal_cation_energies, full=False
 )
 diss_energy_MgOH = dissociation_energy(
-    MGOH2, metal_cation_energies, metal_atom_energies, full=False
+    MGOH2, metal_cation_energies, full=False
 )
 diss_energy_CaOH = dissociation_energy(
-    CAOH2, metal_cation_energies, metal_atom_energies, full=False
+    CAOH2, metal_cation_energies, full=False
 )
 
 print(f"  BeOH: {diss_energy_BeOH:.6f}")
@@ -184,17 +184,17 @@ print(f"  CaOH: {diss_energy_CaOH:.6f}")
 ion_energy_Li = ionization_energy("Li", metal_atom_energies, metal_cation_energies)
 ion_energy_Na = ionization_energy("Na", metal_atom_energies, metal_cation_energies)
 ion_energy_K = ionization_energy("K", metal_atom_energies, metal_cation_energies)
-ion_energy_Be = ionization_energy("Be", metal_atom_energies, metal_cation_energies)
-ion_energy_Mg = ionization_energy("Mg", metal_atom_energies, metal_cation_energies)
-ion_energy_Ca = ionization_energy("Ca", metal_atom_energies, metal_cation_energies)
+# ion_energy_Be = ionization_energy("Be", metal_atom_energies, metal_cation_energies)
+# ion_energy_Mg = ionization_energy("Mg", metal_atom_energies, metal_cation_energies)
+# ion_energy_Ca = ionization_energy("Ca", metal_atom_energies, metal_cation_energies)
 
 print("\nIonization Energies (Hartree):")
 print(f"  Li: {ion_energy_Li:.6f}")
 print(f"  Na: {ion_energy_Na:.6f}")
 print(f"  K: {ion_energy_K:.6f}")
-print(f"  Be: {ion_energy_Be:.6f}")
-print(f"  Mg: {ion_energy_Mg:.6f}")
-print(f"  Ca: {ion_energy_Ca:.6f}")
+# print(f"  Be: {ion_energy_Be:.6f}")
+# print(f"  Mg: {ion_energy_Mg:.6f}")
+# print(f"  Ca: {ion_energy_Ca:.6f}")
 
 ion_energy_Be_2 = ionization_energy(
     "Be", metal_atom_energies, metal_cation_energies, first=True
@@ -209,3 +209,49 @@ ion_energy_Ca_2 = ionization_energy(
 print(f"  Be: {ion_energy_Be_2:.6f}")
 print(f"  Mg: {ion_energy_Mg_2:.6f}")
 print(f"  Ca: {ion_energy_Ca_2:.6f}")
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Data for plotting
+group1_metals = ["Li", "Na", "K"]
+group2_metals = ["Be", "Mg", "Ca"]
+
+# Period of the element
+group1_periods = [2, 3, 4]
+group2_periods = [2, 3, 4]
+
+# Conversion factor from Hartree to kJ/mol
+HARTREE_TO_KJ_PER_MOL = 2625.5
+
+group1_diss_energies = np.array([diss_energy_LiOH, diss_energy_NaOH, diss_energy_KOH]) * HARTREE_TO_KJ_PER_MOL
+group2_diss_energies = np.array([diss_energy_BeOH, diss_energy_MgOH, diss_energy_CaOH]) * HARTREE_TO_KJ_PER_MOL
+
+group1_ion_energies = np.array([ion_energy_Li, ion_energy_Na, ion_energy_K]) * HARTREE_TO_KJ_PER_MOL
+group2_ion_energies = np.array([ion_energy_Be_2, ion_energy_Mg_2, ion_energy_Ca_2]) * HARTREE_TO_KJ_PER_MOL
+
+
+# Create subplots
+fig, axs = plt.subplots(2, 1, figsize=(10, 10))
+
+# Plot dissociation energies
+axs[0].plot(group1_periods, group1_diss_energies, marker="o", label="Group 1")
+axs[0].plot(group2_periods, group2_diss_energies, marker="o", label="Group 2")
+axs[0].set_xlabel("Period")
+axs[0].set_ylabel("Dissociation Energy (kJ/mol)")
+axs[0].set_title("Dissociation Energy vs Period")
+axs[0].set_xticks(group1_periods)
+axs[0].legend()
+
+# Plot ionization energies
+axs[1].plot(group1_periods, group1_ion_energies, marker="o", label="Group 1")
+axs[1].plot(group2_periods, group2_ion_energies, marker="o", label="Group 2")
+axs[1].set_xlabel("Period")
+axs[1].set_ylabel("Ionization Energy (kJ/mol)")
+axs[1].set_title("Ionization Energy vs Period")
+axs[1].set_xticks(group1_periods)
+axs[1].legend()
+
+# Adjust layout and display the plot
+plt.tight_layout()
+plt.show()
