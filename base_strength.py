@@ -1,7 +1,7 @@
 import pyscf
 
 BASIS = "6-31G"
-USE_DFT = True  # Toggle between HF and DFT B3LYP
+METHOD = "HF"  # Options: "HF", "B3LYP", "CCSD"
 
 
 def get_cation_charge(metal_sym):
@@ -19,8 +19,10 @@ def OH_energy():
     # Calculate energy of hydroxide ion
     oh_mol = pyscf.gto.M(atom="O 0 0 0; H 0 0 0.9", basis=BASIS, charge=-1)
     oh_mol.build()
-    if USE_DFT:
+    if METHOD == "B3LYP":
         oh_mf = oh_mol.KS().set(xc="b3lyp").run()
+    elif METHOD == "CCSD":
+        oh_mf = oh_mol.CCSD().run()
     else:
         oh_mf = oh_mol.HF().run()
     e_hydroxide_ion = oh_mf.e_tot
@@ -36,8 +38,10 @@ def metal_energy(metal_sym, charge=0):
             atom=metal_sym + " 0 0 0", basis=BASIS, spin=1, charge=charge
         )
     metal_atom.build()
-    if USE_DFT:
+    if METHOD == "B3LYP":
         metal_mf = metal_atom.KS().set(xc="b3lyp").run()
+    elif METHOD == "CCSD":
+        metal_mf = metal_atom.CCSD().run()
     else:
         metal_mf = metal_atom.HF().run()
     e_metal = metal_mf.e_tot
@@ -57,8 +61,10 @@ def dissociation_energy(
     except:
         raise ValueError(f"Basis set not found for molecule {mol_string}.")
     mol.build()
-    if USE_DFT:
+    if METHOD == "B3LYP":
         mf = mol.KS().set(xc="b3lyp").run()
+    elif METHOD == "CCSD":
+        mf = mol.CCSD().run()
     else:
         mf = mol.HF().run()
     e_mol = mf.e_tot
@@ -86,8 +92,10 @@ def dissociation_energy(
         except:
             metal_oh = pyscf.gto.M(atom=metal_oh_string, basis=BASIS, charge=1, spin=1)
         metal_oh.build()
-        if USE_DFT:
+        if METHOD == "B3LYP":
             metal_oh_mf = metal_oh.KS().set(xc="b3lyp").run()
+        elif METHOD == "CCSD":
+            metal_oh_mf = metal_oh.CCSD().run()
         else:
             metal_oh_mf = metal_oh.HF().run()
         e_metal_oh = metal_oh_mf.e_tot
