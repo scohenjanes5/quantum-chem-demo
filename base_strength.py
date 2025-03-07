@@ -1,28 +1,33 @@
 import pyscf
-import numpy as np
 
-BASIS = '6-31G'
+BASIS = "6-31G"
+
+
 def get_cation_charge(metal_sym):
     # Determine charge of metal
-    if metal_sym in ['Li', 'Na', 'K']:
+    if metal_sym in ["Li", "Na", "K"]:
         metal_charge = 1
-    elif metal_sym in ['Be', 'Mg', 'Ca']:
+    elif metal_sym in ["Be", "Mg", "Ca"]:
         metal_charge = 2
     else:
         raise ValueError(f"Metal {metal_sym} not supported.")
     return metal_charge
 
+
 def OH_energy():
     # Calculate energy of hydroxide ion
-    oh_mol = pyscf.gto.M(atom='O 0 0 0; H 0 0 0.9', basis=BASIS, charge=-1)
+    oh_mol = pyscf.gto.M(atom="O 0 0 0; H 0 0 0.9", basis=BASIS, charge=-1)
     oh_mol.build()
     oh_mf = oh_mol.HF().run()
     e_hydroxide_ion = oh_mf.e_tot
     return e_hydroxide_ion
 
-def dissociation_energy(mol_string):
+
+def dissociation_energy(mol_string, full=True):
     """
-    Calculates the dissociation energy of a metal hydroxide molecule into metal ion and hydroxide ion(s).
+    Calculates the dissociation energy of a metal hydroxide molecule.
+    If full=True, it calculates the energy of dissociation into metal ion and all hydroxide ions.
+    If full=False and the metal is divalent, it calculates the energy of dissociation into metal+OH and remaining hydroxide ion.
     """
     try:
         mol = pyscf.gto.M(atom=mol_string, basis=BASIS)
@@ -33,24 +38,41 @@ def dissociation_energy(mol_string):
     e_mol = mf.e_tot
 
     # Determine metal and number of hydroxide ions
-    atoms = mol_string.split(';')
+    atoms = mol_string.split(";")
     metal_sym = atoms[0].split()[0]  # e.g., Li, Na, Mg, Ba
-    num_hydroxides = len([a for a in atoms if 'O' in a])  # Count 'O' atoms to determine number of OH groups
+    num_hydroxides = len(
+        [a for a in atoms if "O" in a]
+    )  # Count 'O' atoms to determine number of OH groups
 
     metal_charge = get_cation_charge(metal_sym)
-    
-    # Calculate energy of metal ion
-    metal_atom = pyscf.gto.M(atom=metal_sym, basis=BASIS, charge=metal_charge)
-    metal_atom.build()
-    metal_mf = metal_atom.HF().run()
-    e_metal_ion = metal_mf.e_tot
 
-    # Calculate dissociation energy
-    e_products = e_metal_ion + num_hydroxides * HYDROXIDE_ENERGY
+    if full or metal_charge != 2:
+        # Calculate energy of metal ion
+        metal_atom = pyscf.gto.M(atom=metal_sym, basis=BASIS, charge=metal_charge)
+        metal_atom.build()
+        metal_mf = metal_atom.HF().run()
+        e_metal_ion = metal_mf.e_tot
+
+        # Calculate dissociation energy
+        e_products = e_metal_ion + num_hydroxides * HYDROXIDE_ENERGY
+    else:
+        # Calculate energy of metal+OH ion
+        metal_oh_string = metal_sym + " 0 0 0; O 0 0 1.6; H 0 0 2.5"
+        try:
+            metal_oh = pyscf.gto.M(atom=metal_oh_string, basis=BASIS, charge=1)
+        except:
+            metal_oh = pyscf.gto.M(atom=metal_oh_string, basis=BASIS, charge=1, spin=1)
+        metal_oh.build()
+        metal_oh_mf = metal_oh.HF().run()
+        e_metal_oh = metal_oh_mf.e_tot
+
+        # Calculate dissociation energy
+        e_products = e_metal_oh + (num_hydroxides - 1) * HYDROXIDE_ENERGY
     diss_energy = e_products - e_mol
     return diss_energy
 
-def ionization_energy(atom_string):
+
+def ionization_energy(atom_string, first=False):
     """
     Calculates the ionization energy of an atom.
     """
@@ -63,12 +85,18 @@ def ionization_energy(atom_string):
     e_atom = mf.e_tot
 
     metal_sym = atom_string.split()[0]
-    metal_charge = get_cation_charge(metal_sym)
+    if not first:
+        metal_charge = get_cation_charge(metal_sym)
+    else:
+        metal_charge = 1
+
     # Ionized atom
     try:
         atom_ion = pyscf.gto.M(atom=atom_string, basis=BASIS, charge=metal_charge)
     except:
-        atom_ion = pyscf.gto.M(atom=atom_string, basis=BASIS, charge=metal_charge, spin=1)
+        atom_ion = pyscf.gto.M(
+            atom=atom_string, basis=BASIS, charge=metal_charge, spin=1
+        )
     atom_ion.build()
     mf_ion = atom_ion.HF().run()
     e_atom_ion = mf_ion.e_tot
@@ -76,16 +104,23 @@ def ionization_energy(atom_string):
     ionization_energy = e_atom_ion - e_atom
     return ionization_energy
 
-#ionization energies as orbital energies
+
+# ionization energies as orbital energies
+LIOH = "Li 0 0 0; O 0 0 1.6; H 0 0 2.5"
+NAOH = "Na 0 0 0; O 0 0 1.6; H 0 0 2.5"
+KOH = "K 0 0 0; O 0 0 1.6; H 0 0 2.5"
+BEOH2 = "Be 0 0 0; O 0 0 1.6; H 0 0 2.5; O 0 0 -1.6; H 0 0 -2.5"
+MGOH2 = "Mg 0 0 0; O 0 0 1.6; H 0 0 2.5; O 0 0 -1.6; H 0 0 -2.5"
+CAOH2 = "Ca 0 0 0; O 0 0 1.6; H 0 0 2.5; O 0 0 -1.6; H 0 0 -2.5"
 
 # Dissociation Energies
 HYDROXIDE_ENERGY = OH_energy()
-diss_energy_LiOH = dissociation_energy('Li 0 0 0; O 0 0 1.6; H 0 0 2.5')
-diss_energy_NaOH = dissociation_energy('Na 0 0 0; O 0 0 1.6; H 0 0 2.5')
-diss_energy_KOH = dissociation_energy('K 0 0 0; O 0 0 1.6; H 0 0 2.5')
-diss_energy_BeOH2 = dissociation_energy('Be 0 0 0; O 0 0 1.6; H 0 0 2.5; O 0 0 -1.6; H 0 0 -2.5')
-diss_energy_MgOH2 = dissociation_energy('Mg 0 0 0; O 0 0 1.6; H 0 0 2.5; O 0 0 -1.6; H 0 0 -2.5')
-diss_energy_CaOH2 = dissociation_energy('Ca 0 0 0; O 0 0 1.6; H 0 0 2.5; O 0 0 -1.6; H 0 0 -2.5')
+diss_energy_LiOH = dissociation_energy(LIOH)
+diss_energy_NaOH = dissociation_energy(NAOH)
+diss_energy_KOH = dissociation_energy(KOH)
+diss_energy_BeOH2 = dissociation_energy(BEOH2)
+diss_energy_MgOH2 = dissociation_energy(MGOH2)
+diss_energy_CaOH2 = dissociation_energy(CAOH2)
 
 
 print("Dissociation Energies (Hartree):")
@@ -96,18 +131,34 @@ print(f"  BeOH2: {diss_energy_BeOH2:.6f}, {diss_energy_BeOH2/2:.6f} per OH group
 print(f"  MgOH2: {diss_energy_MgOH2:.6f}, {diss_energy_MgOH2/2:.6f} per OH group")
 print(f"  CaOH2: {diss_energy_CaOH2:.6f}, {diss_energy_CaOH2/2:.6f} per OH group")
 
+diss_energy_BeOH = dissociation_energy(BEOH2, full=False)
+diss_energy_MgOH = dissociation_energy(MGOH2, full=False)
+diss_energy_CaOH = dissociation_energy(CAOH2, full=False)
+
+print(f"  BeOH: {diss_energy_BeOH:.6f}")
+print(f"  MgOH: {diss_energy_MgOH:.6f}")
+print(f"  CaOH: {diss_energy_CaOH:.6f}")
+
 # Ionization Energies
-ion_energy_Li = ionization_energy('Li 0 0 0')
-ion_energy_Na = ionization_energy('Na 0 0 0')
-ion_energy_K = ionization_energy('K 0 0 0')
-ion_energy_Be = ionization_energy('Be 0 0 0')
-ion_energy_Mg = ionization_energy('Mg 0 0 0')
-ion_energy_Ca = ionization_energy('Ca 0 0 0')
+ion_energy_Li = ionization_energy("Li 0 0 0")
+ion_energy_Na = ionization_energy("Na 0 0 0")
+ion_energy_K = ionization_energy("K 0 0 0")
+ion_energy_Be = ionization_energy("Be 0 0 0")
+ion_energy_Mg = ionization_energy("Mg 0 0 0")
+ion_energy_Ca = ionization_energy("Ca 0 0 0")
 
 print("\nIonization Energies (Hartree):")
 print(f"  Li: {ion_energy_Li:.6f}")
 print(f"  Na: {ion_energy_Na:.6f}")
 print(f"  K: {ion_energy_K:.6f}")
+print(f"  Be: {ion_energy_Be:.6f}, {ion_energy_Be/2:.6f} per electron")
+print(f"  Mg: {ion_energy_Mg:.6f}, {ion_energy_Mg/2:.6f} per electron")
+print(f"  Ca: {ion_energy_Ca:.6f}, {ion_energy_Ca/2:.6f} per electron")
+
+ion_energy_Be = ionization_energy("Be 0 0 0", first=True)
+ion_energy_Mg = ionization_energy("Mg 0 0 0", first=True)
+ion_energy_Ca = ionization_energy("Ca 0 0 0", first=True)
+
 print(f"  Be: {ion_energy_Be:.6f}")
 print(f"  Mg: {ion_energy_Mg:.6f}")
 print(f"  Ca: {ion_energy_Ca:.6f}")
