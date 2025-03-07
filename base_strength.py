@@ -1,6 +1,7 @@
 import pyscf
 
 BASIS = "6-31G"
+USE_DFT = True  # Toggle between HF and DFT B3LYP
 
 
 def get_cation_charge(metal_sym):
@@ -18,7 +19,10 @@ def OH_energy():
     # Calculate energy of hydroxide ion
     oh_mol = pyscf.gto.M(atom="O 0 0 0; H 0 0 0.9", basis=BASIS, charge=-1)
     oh_mol.build()
-    oh_mf = oh_mol.HF().run()
+    if USE_DFT:
+        oh_mf = oh_mol.KS().set(xc="b3lyp").run()
+    else:
+        oh_mf = oh_mol.HF().run()
     e_hydroxide_ion = oh_mf.e_tot
     return e_hydroxide_ion
 
@@ -34,7 +38,10 @@ def dissociation_energy(mol_string, full=True):
     except:
         raise ValueError(f"Basis set not found for molecule {mol_string}.")
     mol.build()
-    mf = mol.HF().run()
+    if USE_DFT:
+        mf = mol.KS().set(xc="b3lyp").run()
+    else:
+        mf = mol.HF().run()
     e_mol = mf.e_tot
 
     # Determine metal and number of hydroxide ions
@@ -50,7 +57,10 @@ def dissociation_energy(mol_string, full=True):
         # Calculate energy of metal ion
         metal_atom = pyscf.gto.M(atom=metal_sym, basis=BASIS, charge=metal_charge)
         metal_atom.build()
-        metal_mf = metal_atom.HF().run()
+        if USE_DFT:
+            metal_mf = metal_atom.KS().set(xc="b3lyp").run()
+        else:
+            metal_mf = metal_atom.HF().run()
         e_metal_ion = metal_mf.e_tot
 
         # Calculate dissociation energy
@@ -63,7 +73,10 @@ def dissociation_energy(mol_string, full=True):
         except:
             metal_oh = pyscf.gto.M(atom=metal_oh_string, basis=BASIS, charge=1, spin=1)
         metal_oh.build()
-        metal_oh_mf = metal_oh.HF().run()
+        if USE_DFT:
+            metal_oh_mf = metal_oh.KS().set(xc="b3lyp").run()
+        else:
+            metal_oh_mf = metal_oh.HF().run()
         e_metal_oh = metal_oh_mf.e_tot
 
         # Calculate dissociation energy
@@ -81,7 +94,10 @@ def ionization_energy(atom_string, first=False):
     except:
         atom = pyscf.gto.M(atom=atom_string, basis=BASIS, spin=1)
     atom.build()
-    mf = atom.HF().run()
+    if USE_DFT:
+        mf = atom.KS().set(xc="b3lyp").run()
+    else:
+        mf = atom.HF().run()
     e_atom = mf.e_tot
 
     metal_sym = atom_string.split()[0]
@@ -98,7 +114,10 @@ def ionization_energy(atom_string, first=False):
             atom=atom_string, basis=BASIS, charge=metal_charge, spin=1
         )
     atom_ion.build()
-    mf_ion = atom_ion.HF().run()
+    if USE_DFT:
+        mf_ion = atom_ion.KS().set(xc="b3lyp").run()
+    else:
+        mf_ion = atom_ion.HF().run()
     e_atom_ion = mf_ion.e_tot
 
     ionization_energy = e_atom_ion - e_atom
