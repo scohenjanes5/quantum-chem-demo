@@ -48,9 +48,7 @@ def metal_energy(metal_sym, charge=0):
     return e_metal
 
 
-def dissociation_energy(
-    mol_string, metal_cation_energies, full=True
-):
+def dissociation_energy(mol_string, metal_cation_energies, full=True):
     """
     Calculates the dissociation energy of a metal hydroxide molecule.
     If full=True, it calculates the energy of dissociation into metal ion and all hydroxide ions.
@@ -167,26 +165,20 @@ diss_energy_KOH = dissociation_energy(KOH, metal_cation_energies)
 # )
 
 print("Dissociation Energies (Hartree):")
-print(f"  LiOH: {diss_energy_LiOH:.6f}")
-print(f"  NaOH: {diss_energy_NaOH:.6f}")
-print(f"  KOH: {diss_energy_KOH:.6f}")
+print(f"  Li+, OH-: {diss_energy_LiOH:.6f}")
+print(f"  Na+, OH-: {diss_energy_NaOH:.6f}")
+print(f"  K+, OH-: {diss_energy_KOH:.6f}")
 # print(f"  BeOH2: {diss_energy_BeOH2:.6f}, {diss_energy_BeOH2/2:.6f} per OH group")
 # print(f"  MgOH2: {diss_energy_MgOH2:.6f}, {diss_energy_MgOH2/2:.6f} per OH group")
 # print(f"  CaOH2: {diss_energy_CaOH2:.6f}, {diss_energy_CaOH2/2:.6f} per OH group")
 
-diss_energy_BeOH = dissociation_energy(
-    BEOH2, metal_cation_energies, full=False
-)
-diss_energy_MgOH = dissociation_energy(
-    MGOH2, metal_cation_energies, full=False
-)
-diss_energy_CaOH = dissociation_energy(
-    CAOH2, metal_cation_energies, full=False
-)
+diss_energy_BeOH = dissociation_energy(BEOH2, metal_cation_energies, full=False)
+diss_energy_MgOH = dissociation_energy(MGOH2, metal_cation_energies, full=False)
+diss_energy_CaOH = dissociation_energy(CAOH2, metal_cation_energies, full=False)
 
-print(f"  BeOH: {diss_energy_BeOH:.6f}")
-print(f"  MgOH: {diss_energy_MgOH:.6f}")
-print(f"  CaOH: {diss_energy_CaOH:.6f}")
+print(f"  BeOH+, OH-: {diss_energy_BeOH:.6f}")
+print(f"  MgOH+, OH-: {diss_energy_MgOH:.6f}")
+print(f"  CaOH+, OH-: {diss_energy_CaOH:.6f}")
 
 # Calculate ionization energies
 ion_energy_Li = ionization_energy("Li", metal_atom_energies, metal_cation_energies)
@@ -232,11 +224,22 @@ group2_periods = [2, 3, 4]
 # Conversion factor from Hartree to kJ/mol
 HARTREE_TO_KJ_PER_MOL = 2625.5
 
-group1_diss_energies = np.array([diss_energy_LiOH, diss_energy_NaOH, diss_energy_KOH]) * HARTREE_TO_KJ_PER_MOL
-group2_diss_energies = np.array([diss_energy_BeOH, diss_energy_MgOH, diss_energy_CaOH]) * HARTREE_TO_KJ_PER_MOL
+group1_diss_energies = (
+    np.array([diss_energy_LiOH, diss_energy_NaOH, diss_energy_KOH])
+    * HARTREE_TO_KJ_PER_MOL
+)
+group2_diss_energies = (
+    np.array([diss_energy_BeOH, diss_energy_MgOH, diss_energy_CaOH])
+    * HARTREE_TO_KJ_PER_MOL
+)
 
-group1_ion_energies = np.array([ion_energy_Li, ion_energy_Na, ion_energy_K]) * HARTREE_TO_KJ_PER_MOL
-group2_ion_energies = np.array([ion_energy_Be_2, ion_energy_Mg_2, ion_energy_Ca_2]) * HARTREE_TO_KJ_PER_MOL
+group1_ion_energies = (
+    np.array([ion_energy_Li, ion_energy_Na, ion_energy_K]) * HARTREE_TO_KJ_PER_MOL
+)
+group2_ion_energies = (
+    np.array([ion_energy_Be_2, ion_energy_Mg_2, ion_energy_Ca_2])
+    * HARTREE_TO_KJ_PER_MOL
+)
 
 
 # Create subplots

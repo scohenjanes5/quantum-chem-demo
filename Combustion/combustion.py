@@ -87,4 +87,7 @@ print(f"  O2:  {lit_hf_O2:.0f}")
 print(f"  CO2: {lit_hf_CO2:.0f}")
 print(f"  H2O: {lit_hf_H2O:.0f}")
 print(f"  Reaction: {lit_reaction_energy:.0f}")
-print(f"\n NYS Chemistry Reagents Reference Table: –890.4 kJ/mol")
+print(f"\nNYS Chemistry Reagents Reference Table: –890.4 kJ/mol")
+print(
+    f"\nEstimated enthalpy change using number of mols of O2\nAs described in J. Chem. Educ. 92, 2094-2099 (2015).\n-418 kJ/mol O2 * 2 mol O2 = {-418*2} kJ"
+)
