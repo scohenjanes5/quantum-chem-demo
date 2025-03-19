@@ -6,14 +6,18 @@ BASIS = "aug-cc-PVDZ"  # Options: "sto-3g", "6-31G", "cc-pVDZ"
 METHOD = "CCSD"  # Options: "HF", "B3LYP", "MP2", "CCSD"
 
 
-def run_calc(geom_string):
+def run_calc(geom_string, triple=False):
     if "xyz" in geom_string:
         printable_geom = geom_string.split(".")[0]
     else:
         printable_geom = geom_string.split()[0]
 
+    if triple:
+        spin=2
+    else:
+        spin=0
     try:
-        atom = pyscf.gto.M(atom=geom_string, basis=BASIS)
+        atom = pyscf.gto.M(atom=geom_string, basis=BASIS, spin=spin)
     except:
         print("Using spin=1 for open shell system: ", printable_geom)
         atom = pyscf.gto.M(atom=geom_string, basis=BASIS, spin=1)
@@ -50,7 +54,7 @@ e_F, _ = run_calc("F 0 0 0")
 
 # Calculate molecule energies
 e_CH4, mf_CH4 = run_calc(CH4)
-e_O2, mf_O2 = run_calc(O2)
+e_O2, mf_O2 = run_calc(O2, triple=True)
 e_CO2, mf_CO2 = run_calc(CO2)
 e_H2O, mf_H2O = run_calc(H2O)
 e_F2, mf_F2 = run_calc(F2)
@@ -85,6 +89,7 @@ print(f"  F-F (1): {hf_F2/2:.0f}")
 
 print("\nReaction Energy (kJ/mol):")
 print(f"  CH4 + 2O2 -> CO2 + 2H2O: {reaction_energy:.0f}")
+print(f"  Add -88 kJ/mol due to condensation of water to the Standard State: {reaction_energy-88:.0f}")
 
 lit_hf_CH4 = -74.873
 lit_hf_O2 = 0
