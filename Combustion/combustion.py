@@ -2,8 +2,8 @@ import pyscf
 import matplotlib.pyplot as plt
 import numpy as np
 
-BASIS = "6-31G"  # Options: "sto-3g", "6-31G", "cc-pVDZ"
-METHOD = "B3LYP"  # Options: "HF", "B3LYP", "CCSD"
+BASIS = "aug-cc-PVDZ"  # Options: "sto-3g", "6-31G", "cc-pVDZ"
+METHOD = "CCSD"  # Options: "HF", "B3LYP", "MP2", "CCSD"
 
 
 def run_calc(geom_string):
@@ -27,6 +27,8 @@ def run_calc(geom_string):
     mf.chkfile = f"{printable_geom}.chk"
     mf.init_guess = "chkfile"
     mf.kernel()
+    if METHOD == "MP2":
+        pyscf.mp.MP2(mf).kernel()
     e_atom = mf.e_tot
     # convert to kJ/mol
     e_atom = e_atom * 2625.5
@@ -38,23 +40,27 @@ CH4 = "methane.xyz"
 O2 = "oxygen.xyz"
 CO2 = "CO2.xyz"
 H2O = "water.xyz"
+F2 = "F2.xyz"
 
 # Calculate atom energies
 e_C, _ = run_calc("C 0 0 0")
 e_H, _ = run_calc("H 0 0 0")
 e_O, _ = run_calc("O 0 0 0")
+e_F, _ = run_calc("F 0 0 0")
 
 # Calculate molecule energies
 e_CH4, mf_CH4 = run_calc(CH4)
 e_O2, mf_O2 = run_calc(O2)
 e_CO2, mf_CO2 = run_calc(CO2)
 e_H2O, mf_H2O = run_calc(H2O)
+e_F2, mf_F2 = run_calc(F2)
 
 # Calculate heats of formation
 hf_CH4 = e_CH4 - (e_C + 4 * e_H)
 hf_O2 = e_O2 - (2 * e_O)
 hf_CO2 = e_CO2 - (e_C + 2 * e_O)
 hf_H2O = e_H2O - (e_O + 2 * e_H)
+hf_F2 = e_F2 - (2 * e_F)
 
 # Combustion reaction: CH4 + 2O2 -> CO2 + 2H2O
 e_reactants = hf_CH4 + 2 * hf_O2 + (e_C + 4 * e_H) + 2 * (2 * e_O)
@@ -68,12 +74,14 @@ print(f"  CH4: {hf_CH4:.0f}")
 print(f"  O2:  {hf_O2:.0f}")
 print(f"  CO2: {hf_CO2:.0f}")
 print(f"  H2O: {hf_H2O:.0f}")
+print(f"  F2:  {hf_F2:.0f}")
 
 print("Energy per electron-pair (kJ/mol):")
 print(f"  C-H (1): {hf_CH4/4:.0f}")
 print(f"  O=O (2): {hf_O2/2:.0f}")
 print(f"  C=O (2): {hf_CO2/4:.0f}")
 print(f"  O-H (1): {hf_H2O/2:.0f}")
+print(f"  F-F (1): {hf_F2/2:.0f}")
 
 print("\nReaction Energy (kJ/mol):")
 print(f"  CH4 + 2O2 -> CO2 + 2H2O: {reaction_energy:.0f}")
@@ -101,8 +109,8 @@ products = ["CO2", "2H2O"]
 energies = [hf_CH4, 2 * hf_O2, hf_CO2, 2 * hf_H2O]
 
 # Data for the bond energy plot
-bonds = ["C-H", "O=O", "C=O", "O-H"]
-bond_energies = [hf_CH4 / 4, hf_O2 / 2, hf_CO2 / 4, hf_H2O / 2]
+bonds = ["C-H", "O=O", "C=O", "O-H", "F-F"]
+bond_energies = [hf_CH4 / 4, hf_O2 / 2, hf_CO2 / 4, hf_H2O / 2, hf_F2 / 2]
 
 # Create subplots
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 12))
@@ -121,7 +129,8 @@ ax1.legend()
 
 # Plotting the bond energies
 ax2.bar(bonds[:2], bond_energies[:2], color="blue", label="Reactants")
-ax2.bar(bonds[2:], bond_energies[2:], color="red", label="Products")
+ax2.bar(bonds[2:4], bond_energies[2:4], color="red", label="Products")
+ax2.bar(bonds[4:], bond_energies[4:], color="green", label="Other")
 ax2.set_ylabel("Energy (kJ/mol)")
 ax2.set_title("Bond Energies by Electron Pair")
 ax2.legend()
