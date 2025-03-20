@@ -160,3 +160,16 @@ cython_debug/
 #.idea/
 *.chk
 *.cube
+Ligands/CoNH34_mo_31_optimized.jpg
+Ligands/CoNH34_mo_32_optimized.jpg
+Ligands/CoNH34_mo_34_optimized.jpg
+Ligands/CoNH34_mo_35_optimized.jpg
+Ligands/CoNH34_mo_38_optimized.jpg
+Ligands/CoNH35_mo_32_optimized.jpg
+Ligands/CoNH35_mo_35_optimized.jpg
+Ligands/CoNH35_mo_37_optimized.jpg
+Ligands/CoNH35_mo_38_optimized.jpg
+Ligands/CoNH35_mo_40_optimized.jpg
+Ligands/CoNH36_mo_35_optimized.jpg
+Ligands/CoNH36_mo_36_optimized.jpg
+Ligands/CoNH36_mo_38_optimized.jpg
