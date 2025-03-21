@@ -16,19 +16,26 @@ def calculate_mo_energies(num_nh3):
             raise FileNotFoundError(f"File {geometry} not found.")
 
     # Create the PySCF molecule object
+    BASIS = "6-31g"  # Adjust basis set as needed
+    """
+    When optimizing the 4-Ligand complex, with sto-3g,
+    the optimization leads to tetrahedral geometry.
+    When using 6-31g, the optimization leads to square planar geometry.
+    Both with MP2 level of theory.
+    """
     try:
         mol = gto.M(
             atom=geometry,
-            basis="sto-3g",  # Minimal basis for speed
-            charge=3,  # +3 charge for the complex
+            basis=BASIS,
+            charge=3,
         )
         mol.build()
     except:
         mol = gto.M(
             atom=geometry,
-            basis="sto-3g",
+            basis=BASIS,
             charge=3,
-            spin=1,  # Open-shell system
+            spin=1,
         )
         mol.build()
 
