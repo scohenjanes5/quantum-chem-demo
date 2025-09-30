@@ -5,11 +5,12 @@ repos:
   rev: v6.0.0
   hooks:
   - id: trailing-whitespace
+    exclude_types: [nb]
   - id: end-of-file-fixer
+    exclude_types: [nb]
   - id: check-yaml
     exclude: ^conda/
   - id: check-added-large-files
   - id: check-shebang-scripts-are-executable
   - id: mixed-line-ending
     args: ['--fix=lf']
-  - exclude_types: [nb]
