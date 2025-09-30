@@ -13,9 +13,9 @@ def run_calc(geom_string, triple=False):
         printable_geom = geom_string.split()[0]
 
     if triple:
-        spin=2
+        spin = 2
     else:
-        spin=0
+        spin = 0
     try:
         atom = pyscf.gto.M(atom=geom_string, basis=BASIS, spin=spin)
     except:
@@ -81,15 +81,17 @@ print(f"  H2O: {hf_H2O:.0f}")
 print(f"  F2:  {hf_F2:.0f}")
 
 print("Energy per electron-pair (kJ/mol):")
-print(f"  C-H (1): {hf_CH4/4:.0f}")
-print(f"  O=O (2): {hf_O2/2:.0f}")
-print(f"  C=O (2): {hf_CO2/4:.0f}")
-print(f"  O-H (1): {hf_H2O/2:.0f}")
-print(f"  F-F (1): {hf_F2/2:.0f}")
+print(f"  C-H (1): {hf_CH4 / 4:.0f}")
+print(f"  O=O (2): {hf_O2 / 2:.0f}")
+print(f"  C=O (2): {hf_CO2 / 4:.0f}")
+print(f"  O-H (1): {hf_H2O / 2:.0f}")
+print(f"  F-F (1): {hf_F2 / 2:.0f}")
 
 print("\nReaction Energy (kJ/mol):")
 print(f"  CH4 + 2O2 -> CO2 + 2H2O: {reaction_energy:.0f}")
-print(f"  Add -88 kJ/mol due to condensation of water to the Standard State: {reaction_energy-88:.0f}")
+print(
+    f"  Add -88 kJ/mol due to condensation of water to the Standard State: {reaction_energy - 88:.0f}"
+)
 
 lit_hf_CH4 = -74.873
 lit_hf_O2 = 0
@@ -102,9 +104,9 @@ print(f"  O2:  {lit_hf_O2:.0f}")
 print(f"  CO2: {lit_hf_CO2:.0f}")
 print(f"  H2O: {lit_hf_H2O:.0f}")
 print(f"  Reaction: {lit_reaction_energy:.0f}")
-print(f"\nNYS Chemistry Reagents Reference Table: –890.4 kJ/mol")
+print("\nNYS Chemistry Reagents Reference Table: –890.4 kJ/mol")
 print(
-    f"\nEstimated enthalpy change using number of mols of O2\nAs described in J. Chem. Educ. 92, 2094-2099 (2015).\n-418 kJ/mol O2 * 2 mol O2 = {-418*2} kJ"
+    f"\nEstimated enthalpy change using number of mols of O2\nAs described in J. Chem. Educ. 92, 2094-2099 (2015).\n-418 kJ/mol O2 * 2 mol O2 = {-418 * 2} kJ"
 )
 
 # Plotting code

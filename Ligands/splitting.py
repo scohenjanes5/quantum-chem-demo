@@ -1,8 +1,7 @@
 import pyscf
-import numpy as np
 import os
 from pyscf.tools import cubegen
-from pyscf import gto, scf, grad, mcscf
+from pyscf import gto, scf
 
 
 def calculate_mo_energies(num_nh3):
@@ -78,7 +77,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     plt.figure(figsize=(10, 6))
-    plt.title(f"MO Energies for Co(NH3)_i^(3+), i = 4, 5, 6 (Geometry Optimized)")
+    plt.title("MO Energies for Co(NH3)_i^(3+), i = 4, 5, 6 (Geometry Optimized)")
     plt.xlabel("(Shifted) Molecular Orbital Index")
     plt.ylabel("Energy (Hartree)")
     plt.grid(True)

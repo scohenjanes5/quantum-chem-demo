@@ -1,10 +1,6 @@
 import pyscf
 import numpy as np
-import os
-from glob import glob
-from pyscf.tools import cubegen
-from pyscf import gto, scf, grad, mcscf
-from rich.progress import track
+from pyscf import gto, scf
 
 
 def calculate_mo_energies():

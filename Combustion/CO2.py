@@ -2,6 +2,7 @@ import pyscf
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def calculate_mo_energies():
     """Calculates and plots MO energies for CO2 in singlet form."""
 
@@ -36,13 +37,21 @@ def plot_mo_energies(mo_energies, occupied_indices):
     plt.figure(figsize=(8, 6))
 
     # Plot MO energies
-    plt.plot(mo_energies, marker='o', linestyle='--', label='CO2', color='blue')
-    plt.plot(occupied_indices-3, mo_energies[occupied_indices-3], marker='*', color='blue', linestyle='None', label='Occupied', markersize=12)
+    plt.plot(mo_energies, marker="o", linestyle="--", label="CO2", color="blue")
+    plt.plot(
+        occupied_indices - 3,
+        mo_energies[occupied_indices - 3],
+        marker="*",
+        color="blue",
+        linestyle="None",
+        label="Occupied",
+        markersize=12,
+    )
 
     # Add labels and title
-    plt.xlabel('Molecular Orbital Index')
-    plt.ylabel('Energy (Hartree)')
-    plt.title('Molecular Orbital Energies of CO2 (Singlet)')
+    plt.xlabel("Molecular Orbital Index")
+    plt.ylabel("Energy (Hartree)")
+    plt.title("Molecular Orbital Energies of CO2 (Singlet)")
     plt.legend()
 
     # Customize the plot

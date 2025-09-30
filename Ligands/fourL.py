@@ -3,7 +3,7 @@ import numpy as np
 import os
 from glob import glob
 from pyscf.tools import cubegen
-from pyscf import gto, scf, grad, mcscf
+from pyscf import gto, scf
 from rich.progress import track
 
 
