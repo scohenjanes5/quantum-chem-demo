@@ -127,7 +127,7 @@ def main():
     if not args.fast:
         pH_vals = [pH(args, last_volume)]
         last_pH = pH_vals[-1]
-        
+
         if args.approx:
             approx_pH = [pH_approx(args, last_volume)]
             last_pH = approx_pH[-1]
@@ -150,12 +150,12 @@ def main():
                 pH_vals.append(pH(args, last_volume))
                 prev_pH = last_pH
                 last_pH = pH_vals[-1]
-        
+
             volumes.append(last_volume * 1000)
             try_derivative = (last_pH - prev_pH) / new_increment
             if try_derivative != np.nan:
                 derivative = try_derivative
-            
+
             print(f'Volume: {last_volume:.2f}L, pH: {last_pH:.2f}, derivative: {derivative:.2f}')
 
     else:
@@ -187,4 +187,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
